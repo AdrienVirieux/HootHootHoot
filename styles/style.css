@@ -4,3 +4,31 @@ section {
 section.active {
     display: initial;
 }
+
+.grey {
+    border: 2px solid grey;
+}
+
+.blue {
+    border: 2px solid blue;
+}
+
+.cyan {
+    border: 2px solid cyan;
+}
+
+.orange {
+    border: 2px solid orange;
+}
+
+.red {
+    border: 2px solid red;
+}
+
+#span_temperature {
+    padding: 5px;
+}
+
+#ligne_modele {
+    visibility: hidden;
+}

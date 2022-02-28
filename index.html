@@ -11,7 +11,7 @@
 </head>
 <body>
     <script defer src="scripts/main.js"></script>
-    
+
     <nav>
         <ul>
             <li><img src="img/menu-bar.png" id="menu-icon" onclick="sideMenu()" width="20px" height="20px"></li>
@@ -34,7 +34,13 @@
 
 
     <section role="tabpanel" id="reelTime" class="active">
-        <p>oui</p>
+        <div>
+            <p id="p_in_temperature">Température intérieure<span id="span_in_temperature"></span></p>
+            
+        </div>
+        <div>
+            <p id="p_out_temperature">Température extérieure<span id="span_out_temperature"></span></p>
+        </div>
     </section>
     <section role="tabpanel" id="historique">
         <p>non</p>
