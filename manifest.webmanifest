@@ -1,0 +1,39 @@
+{
+
+    "name": "My Custom PWA",
+
+    "short_name": "Custom PWA",
+
+    "description": "An example of what can do a Progressive Web App.",
+
+    "start_url": "/index.html", // à adapter à l'URL du projet
+
+    "display": "fullscreen",
+
+    "icons": [
+
+      {
+
+        "src": "images/rubik-256x256.png",
+
+        "sizes": "256x256",
+
+        "type": "image/png"
+
+      },
+
+      {
+
+        "src": "images/rubik-128x128.png",
+
+        "sizes": "128x128",
+
+        "type": "image/png"
+
+      }
+
+    ],
+
+"background_color": "grey"
+
+}

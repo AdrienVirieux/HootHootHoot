@@ -4,37 +4,40 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <script type="text/javascript" src="scripts/fonctions.js"></script>
+    <link href="styles/style.css" rel="stylesheet">
+    <link rel="webmanifest" href="manifest.webmanifest">
 
     <title>HotHotHot</title>
 </head>
 <body>
+    <script defer src="scripts/main.js"></script>
+    
     <nav>
         <ul>
-            <li>les trois barres</li>
-            <li>Install</li>
+            <li><img src="img/menu-bar.png" id="menu-icon" onclick="sideMenu()" width="20px" height="20px"></li>
+            <li><a>Install</a></li>
             <li>logo</li>
         </ul>
-        <ul>
+        <ul id="side-nav">
             <li><a href="#">Accueil</a></li>
             <li><a href="doc.html">Documentation</a></li>
             <li>Online</li>
         </ul>
     </nav>
 
-    <div>
-        <ul>
-            <li>reelTime</li>
-            <li>historique</li>
+    <div id="nav-onglet">
+        <ul role="tablist">
+            <li role="tab"><a href="#reelTime">reelTime</a></li>
+            <li role="tab"><a href="#historique">historique</a></li>
         </ul>
     </div>
 
 
-    <div id="reelTime">
+    <section role="tabpanel" id="reelTime" class="active">
         <p>oui</p>
-    </div>
-    <div id="historique">
+    </section>
+    <section role="tabpanel" id="historique">
         <p>non</p>
-    </div>
+    </section>
 </body>
 </html>
