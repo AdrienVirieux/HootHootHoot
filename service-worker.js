@@ -1,31 +1,75 @@
-/*
-* Attention : CacheStorage != LocalStorage
-*
-* Il faut définir ici au moins un écouteur d'évément sur 'install' et
-* un écouteur d'événement sur 'fetch'
-*
-*/
+var CACHE_NAME = '_HotHotHot_offline';
+var urlCache = [
+    "/",
+    "/img/",
+    "/scripts/",
+    "/styles/"
+];
 
-
-// Charger les ressources puis les mettre en cache
-
+// Charge les ressources puis les mets en cache
 self.addEventListener('install', (e) => {
     e.waitUntil(
-      caches.open('my-custom-pwa').then((cache) => cache.addAll([
-          "index.html",
-          "scripts/main.js",
-          "sw.js",
-  // ... ajouter les autres ressources à mettre en cache
-        ])), // à adapter à l'URL du projet
+        caches.open(CACHE_NAME).then(function(cache) {
+            console.log("Cashe Opened");
+            return cache.addAll(urlCache);
+        })
     );
 });
-  
-  
-  // Stratégie "Cache, falling back to network"
-  // => d'abord vérifier si la ressource n'est pas dans le cache pour la récupérer (offline)
-  // sinon, récupérer depuis le serveur en ligne (online)
-self.addEventListener('fetch', (e) => {
-    e.respondWith(
-        caches.match(e.request).then((response) => response || fetch(e.request)),
-    );
-});
+
+// self.addEventListener('fetch', function(event) {
+//     event.respondWith(
+//     caches.match(event.request)
+//         .then(function(response) {
+//         Cache Trouvé - return la réponse
+//         if (response) {
+//             return response;
+//         }
+
+//         return fetch(event.request).then(
+//             function(response) {
+//             On check si la réponse est valide
+//             if(!response || response.status !== 200 || response.type !== 'basic') {
+//                 return response;
+//             }
+
+//             On clone la réponse pour la mettre en cache et l'afficher dans le browser
+//             var responseToCache = response.clone();
+
+//             caches.open(CACHE_NAME)
+//                 .then(function(cache) {
+//                 cache.put(event.request, responseToCache);
+//                 });
+
+//             return response;
+//             }
+//         );
+//         })
+//     );
+// });
+
+// // Récupère les ressources depuis le serveur
+// const fromNetwork = (request, timeout) => new Promise((fulfill, reject) => {
+//     const timeoutId = setTimeout(reject, timeout);
+//     fetch(request).then(response => {
+//       clearTimeout(timeoutId);
+//       fulfill(response);
+//       update(request);
+//     }, reject);
+// });
+
+// // récupère les ressources depuis le cache
+// const fromCache = request => caches.open(CURRENT_CACHE).then(cache => cache.match(request).then(matching => matching));
+
+// // met en cache la page
+// const updateCache = request => caches.open(CURRENT_CACHE).then(cache =>fetch(request).then(response => cache.put(request, response)));
+
+// // Serveur First
+// self.addEventListener('fetch', event => {
+//   event.respondWith(
+//     fromNetwork(event.request, 10000).catch(() => fromCache(event.request))
+//   );
+//   event.waitUntil(updateCache(event.request));
+// });
+
+// Récupérer les ressources depuis le serveur, si réussi on les mets en cache.
+// Afficher depuis le cache.
