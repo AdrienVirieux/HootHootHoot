@@ -1,3 +1,4 @@
+
 var CACHE_NAME = '_HotHotHot_offline';
 var urlCache = [
     "/",
