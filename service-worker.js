@@ -17,60 +17,93 @@ self.addEventListener('install', (e) => {
     );
 });
 
-// self.addEventListener('fetch', function(event) {
-//     event.respondWith(
-//     caches.match(event.request)
-//         .then(function(response) {
-//         Cache Trouvé - return la réponse
-//         if (response) {
-//             return response;
-//         }
 
-//         return fetch(event.request).then(
-//             function(response) {
-//             On check si la réponse est valide
-//             if(!response || response.status !== 200 || response.type !== 'basic') {
-//                 return response;
-//             }
 
-//             On clone la réponse pour la mettre en cache et l'afficher dans le browser
-//             var responseToCache = response.clone();
+self.addEventListener('fetch', function(event) {
+    event.respondWith(
+    caches.match(event.request)
+        .then(function(response) {
+        // Cache Trouvé - return la réponse
+        if (response) {
+            return response;
+        }
 
-//             caches.open(CACHE_NAME)
-//                 .then(function(cache) {
-//                 cache.put(event.request, responseToCache);
-//                 });
+        return fetch(event.request).then(
+            function(response) {
+            // On check si la réponse est valide
+            if(!response || response.status !== 200 || response.type !== 'basic') {
+                return response;
+            }
 
-//             return response;
-//             }
-//         );
-//         })
-//     );
-// });
+            // On clone la réponse pour la mettre en cache et l'afficher dans le browser
+            var responseToCache = response.clone();
 
-// // Récupère les ressources depuis le serveur
-// const fromNetwork = (request, timeout) => new Promise((fulfill, reject) => {
-//     const timeoutId = setTimeout(reject, timeout);
-//     fetch(request).then(response => {
-//       clearTimeout(timeoutId);
-//       fulfill(response);
-//       update(request);
-//     }, reject);
-// });
+            caches.open(CACHE_NAME)
+                .then(function(cache) {
+                cache.put(event.request, responseToCache);
+                });
 
-// // récupère les ressources depuis le cache
-// const fromCache = request => caches.open(CURRENT_CACHE).then(cache => cache.match(request).then(matching => matching));
+            return response;
+            }
+        );
+        })
+    );
+});
 
-// // met en cache la page
-// const updateCache = request => caches.open(CURRENT_CACHE).then(cache =>fetch(request).then(response => cache.put(request, response)));
+// Récupère les ressources depuis le serveur
+const fromNetwork = (request, timeout) => new Promise((fulfill, reject) => {
+    const timeoutId = setTimeout(reject, timeout);
+    fetch(request).then(response => {
+      clearTimeout(timeoutId);
+      fulfill(response);
+      update(request);
+    }, reject);
+});
 
-// // Serveur First
-// self.addEventListener('fetch', event => {
-//   event.respondWith(
-//     fromNetwork(event.request, 10000).catch(() => fromCache(event.request))
-//   );
-//   event.waitUntil(updateCache(event.request));
-// });
+// récupère les ressources depuis le cache
+const fromCache = request => caches.open(CURRENT_CACHE).then(cache => cache.match(request).then(matching => matching));
+
+// met en cache la page
+const updateCache = request => caches.open(CURRENT_CACHE).then(cache =>fetch(request).then(response => cache.put(request, response)));
+
+// Serveur First
+self.addEventListener('fetch', event => {
+  event.respondWith(
+    fromNetwork(event.request, 10000).catch(() => fromCache(event.request))
+  );
+  event.waitUntil(updateCache(event.request));
+});
 
 // Récupérer les ressources depuis le serveur, si réussi on les mets en cache.
 // Afficher depuis le cache.
+
+// -----------------------------------------------
+// bouton d'installation
+let deferredPrompt;  
+const addBtn = document.querySelector('.add-button');  
+addBtn.style.display = 'none';  
+
+window.addEventListener('beforeinstallprompt', (e) => {  
+    // Prevent Chrome 67 and earlier from automatically showing the prompt  
+    e.preventDefault();  
+    // Stash the event so it can be triggered later.  
+    deferredPrompt = e;  
+    // Update UI to notify the user they can add to home screen  
+    addBtn.style.display = 'block';  
+
+    addBtn.addEventListener('click', (e) => {  
+        // hide our user interface that shows our A2HS button  
+        addBtn.style.display = 'none';  
+        // Show the prompt  
+        deferredPrompt.prompt();  
+        // Wait for the user to respond to the prompt  
+        deferredPrompt.userChoice.then((choiceResult) => {  
+            if (choiceResult.outcome === 'accepted') {  
+                console.log('User accepted the A2HS prompt');  
+            } else {  
+                console.log('User dismissed the A2HS prompt');  
+            }  
+            deferredPrompt = null;  
+        });  
+    });  
+});
