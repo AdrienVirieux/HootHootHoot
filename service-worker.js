@@ -1,12 +1,16 @@
 var CACHE_NAME = '_HotHotHot_offline';
 var urlCache = [
-    "/",
-    "/img/",
-    "/scripts/",
-    "/styles/"
+    "/img/menu-bar.png",
+    "/img/star-empty.png",
+    "/img/star.png",
+    "/scripts/main.js",
+    "/scripts/graph.js",
+    "/scripts/chart.js",
+    "/styles/bootstrap.css",
+    "/styles/style.css"
 ];
 
-// Charge les ressources puis les mets en cache
+// Charge les ressources puis les mets dans le cache
 self.addEventListener('install', (e) => {
     e.waitUntil(
         caches.open(CACHE_NAME).then(function(cache) {
@@ -16,35 +20,21 @@ self.addEventListener('install', (e) => {
     );
 });
 
-
-
 self.addEventListener('fetch', function(event) {
     event.respondWith(
-        caches.match(event.request)
-        .then(function(response) {
-            // Cache Trouvé - return la réponse
-            if (response) {
+        caches.match(event.request).then(function(response) {
+            // Cache Trouvé - retourne la réponse
+            if (response) return response;
+            return fetch(event.request).then(function(response) {
+                // On clone la réponse
+                var responseToCache = response.clone();
+                // On met le clone dans le cache
+                caches.open(CACHE_NAME).then(function(cache) {
+                    cache.put(event.request, responseToCache);
+                });
+                // On retourne la réponse au navigateur
                 return response;
-            }
-
-            return fetch(event.request).then(
-                function(response) {
-                    // On check si la réponse est valide
-                    if (!response || response.type !== 'basic') {
-                        return response;
-                    }
-
-                    // On clone la réponse pour la mettre en cache et l'afficher dans le browser
-                    var responseToCache = response.clone();
-
-                    caches.open(CACHE_NAME)
-                        .then(function(cache) {
-                            cache.put(event.request, responseToCache);
-                        });
-
-                    return response;
-                }
-            );
+            });
         })
     );
 });
