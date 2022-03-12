@@ -86,8 +86,6 @@ localStorage['myKey'] = 'konar'; // only strings
 // Une thes belle alerte alerte
 //window.alert("Va te faire enculé sale fils de pute");
 
-var myVar = localStorage['myKey'];
-console.log(myVar);
 
 // -----------------------------------------------
 
@@ -103,7 +101,7 @@ function checkMinMax() {
     }
 
     console.log(temperature);
-    if (spanMin.textContent ==  "" && spanMax.textContent == "") {
+    if (spanMin.textContent == "" && spanMax.textContent == "") {
         spanMin.innerText = temperature;
         spanMax.innerText = temperature;
     }
@@ -119,163 +117,127 @@ function checkMinMax() {
 
 // -----------------------------------------------
 
+function connectToCapteurs() {
+    // Websocket
+    const socket = new WebSocket('wss://ws.hothothot.dog:9502');
+
+    // Listen for possible errors
+    // If exist, use 'fetch'
+    socket.addEventListener('error', function (event) {
+        fetch("https://hothothot.dog/api/capteurs?format=json", { method: "POST" })
+            .then(response => response.json())
+            .then(function (data) {
+                console.log(data);
+                getTemperature(data);
+            })
+    });
+
+    // Try to connect with Websocket
+    socket.onopen = function (event) {
+        console.log("Connexion établie");
+        //Envoi d'un message au serveur (obligatoire)
+        socket.send("coucou !");
+        // au retour...
+        socket.onmessage = function (msg) {
+            var resultJson = JSON.parse(msg.data);
+            console.log(resultJson);
+            getTemperature(resultJson);
+        }
+    }
+}
+
+// Initialisation du localStorage
+let temp = [];
+localStorage.setItem('IN_TEMP', JSON.stringify(temp));
+localStorage.setItem('OUT_TEMP', JSON.stringify(temp));
+// Ajoute les valeurs du serveur recu dans le localStorage
+function localCacheTemp(temperatureIn, temperatureOut) {
+    let arrayInJSON = JSON.parse(localStorage['IN_TEMP']);
+    let arrayOutJSON = JSON.parse(localStorage['OUT_TEMP']);
+    let tempIn = [];
+    let tempOut = [];
+
+    // Convertion d'un obj JSON -> array
+    for (i in arrayInJSON) {
+        tempIn.push(arrayInJSON[i]);
+        tempOut.push(arrayOutJSON[i]);
+    }
+    tempIn.push(temperatureIn);
+    tempOut.push(temperatureOut);
+
+    if (tempIn.length > 1000) {
+        tempIn.pop(0);
+        tempOut.pop(0);
+    }
+
+    localStorage.setItem('IN_TEMP', JSON.stringify(tempIn));
+    localStorage.setItem('OUT_TEMP', JSON.stringify(tempOut));
+
+    console.log(tempIn);
+    console.log(tempOut);
+}
+
 var span_in_temperature = document.getElementById('span_in_temperature');
 var span_out_temperature = document.getElementById('span_out_temperature');
+function getTemperature(dataJSON) {
+    let temperatureIn = dataJSON["capteurs"]["0"]["Valeur"];
+    let temperatureOut = dataJSON["capteurs"]["1"]["Valeur"];
 
-function getTemperature() {
-    fetch("https://hothothot.dog/api/capteurs?format=json", { method: "POST" })
-        .then(response => response.json())
-        .then(function (data) {
-            let temperatureIn = data["capteurs"]["0"]["Valeur"];
-            let temperatureOut = data["capteurs"]["1"]["Valeur"];
 
-            // Température extérieure
-            let color = 'white';
-            if (temperatureOut < 0)
-                color = 'blue';
-            else if (35 < temperatureOut)
-                color = 'red';
-            span_out_temperature.setAttribute("class", color);
-            span_out_temperature.innerText = temperatureOut;
+    console.log(temperatureIn, temperatureOut);
+    localCacheTemp(temperatureIn, temperatureOut);
 
-            // Température intérieure
-            color = 'white'
-            if (temperatureIn < 0)
-                color = 'blue';
-            else if (0 <= temperatureIn && temperatureIn < 12)
-                color = 'cyan';
-            else if (22 <= temperatureIn && temperatureIn < 50)
-                color = 'orange';
-            else if (50 <= temperatureIn)
-                color = 'red';
-            else
-                color = 'white';
-            span_in_temperature.setAttribute("class", color);
-            span_in_temperature.innerText = temperatureIn;
+    // Température extérieure
+    let color = 'white';
+    if (temperatureOut < 0)
+        color = 'blue';
+    else if (35 < temperatureOut)
+        color = 'red';
+    span_out_temperature.setAttribute("class", color);
+    span_out_temperature.innerText = temperatureOut;
 
-            checkMinMax();
+    // Température intérieure
+    color = 'white'
+    if (temperatureIn < 0)
+        color = 'blue';
+    else if (0 <= temperatureIn && temperatureIn < 12)
+        color = 'cyan';
+    else if (22 <= temperatureIn && temperatureIn < 50)
+        color = 'orange';
+    else if (50 <= temperatureIn)
+        color = 'red';
+    else
+        color = 'white';
+    span_in_temperature.setAttribute("class", color);
+    span_in_temperature.innerText = temperatureIn;
 
-            // Affichage des problèmes
-            let titre_message_in = document.getElementById('alerte-span-out');
-            if (temperatureOut < 0)
-                titre_message_in.innerText = 'Banquise en vue !';
-            else if (35 < temperatureOut)
-                titre_message_in.innerText = 'Hot ! Hot ! Hot !';
+    checkMinMax();
 
-            let titre_message_out = document.getElementById('alerte-span-in');
-            if (temperatureIn < 0)
-                titre_message_out.innerText = 'Canalisations gelées, appelez SOS plombier et mettez un bonnet !';
-            else if (0 <= temperatureIn && temperatureIn < 12)
-                titre_message_out.innerText = 'Montez le chauffage ou mettez un gros pull  !';
-            else if (22 < temperatureIn && temperatureIn <= 50)
-                titre_message_out.innerText = 'Baissez le chauffage !';
-            else if (50 <= temperatureIn)
-                titre_message_out.innerText = 'Appelez les pompiers ou arrêtez votre barbecue !';
-        });
+    // // Affichage des problèmes
+    // let titre_message_in = document.getElementById('alerte-span-out');
+    // if (temperatureOut < 0)
+    //     titre_message_in.innerText = 'Banquise en vue !';
+    // else if (35 < temperatureOut)
+    //     titre_message_in.innerText = 'Hot ! Hot ! Hot !';
+
+    // let titre_message_out = document.getElementById('alerte-span-in');
+    // if (temperatureIn < 0)
+    //     titre_message_out.innerText = 'Canalisations gelées, appelez SOS plombier et mettez un bonnet !';
+    // else if (0 <= temperatureIn && temperatureIn < 12)
+    //     titre_message_out.innerText = 'Montez le chauffage ou mettez un gros pull  !';
+    // else if (22 < temperatureIn && temperatureIn <= 50)
+    //     titre_message_out.innerText = 'Baissez le chauffage !';
+    // else if (50 <= temperatureIn)
+    //     titre_message_out.innerText = 'Appelez les pompiers ou arrêtez votre barbecue !';
 }
 
-getTemperature();
+
+connectToCapteurs();
 var interval = setInterval(function () {
-    getTemperature();
+    connectToCapteurs();
 }, 120000);
 
-
-
 // -----------------------------------------------
-// Affichage des température
-// --------- tempo -----------
-function getRandomArbitrary(min, max) {
-    return Math.floor(Math.random() * (max - min) + min);
-}
-var A_temperatures = [];
-for (var i = 20; i > 0; --i) {
-    var x = getRandomArbitrary(-20, 60);
-    A_temperatures.push(x);
-}
-// --------- ----- -----------
-
-var i = 0;
-// var interval = setInterval(function () {
-//     if (i < A_temperatures.length) {
-//         if (document.getElementById('titre_message'))
-//             document.getElementById('titre_message').remove();
-
-//         let I_temperature = A_temperatures[i];
-//         let O_temperature = A_temperatures[A_temperatures.length - 1 - i];
-//         let color = 'grey';
-
-//         // Température extérieure
-//         if (O_temperature < 0)
-//             color = 'blue';
-//         else if (35 < O_temperature)
-//             color = 'red';
-//         else
-//             color = 'grey';
-//         span_out_temperature.setAttribute("class", color);
-//         span_out_temperature.innerText = O_temperature;
-
-//         // Température intérieure
-//         if (I_temperature < 0)
-//             color = 'blue';
-//         else if (0 <= I_temperature && I_temperature < 12)
-//             color = 'cyan';
-//         else if (22 <= I_temperature && I_temperature < 50)
-//             color = 'orange';
-//         else if (50 <= I_temperature)
-//             color = 'red';
-//         else
-//             color = 'grey';
-//         span_in_temperature.setAttribute("class", color);
-//         span_in_temperature.innerText = I_temperature;
-
-//         ++i;
-
-//         // Affichage des problèmes
-//         let titre_message_in = document.getElementById('alerte-span-out');
-//         if (O_temperature < 0)
-//             titre_message_in.innerText = 'Banquise en vue !';
-//         else if (35 < O_temperature)
-//             titre_message_in.innerText = 'Hot ! Hot ! Hot !';
-
-//         let titre_message_out = document.getElementById('alerte-span-in');
-//         if (I_temperature < 0)
-//             titre_message_out.innerText = 'Canalisations gelées, appelez SOS plombier et mettez un bonnet !';
-//         else if (0 <= I_temperature < 12)
-//             titre_message_out.innerText = 'Montez le chauffage ou mettez un gros pull  !';
-//         else if (22 < I_temperature <= 50)
-//             titre_message_out.innerText = 'Baissez le chauffage !';
-//         else if (50 <= I_temperature)
-//             titre_message_out.innerText = 'Appelez les pompiers ou arrêtez votre barbecue !';
-
-//     } else {
-//         clearInterval(interval);
-//         interval = null;
-//     }
-// }, 5000)
-
-// -----------------------------------------------
-
-// Websocket
-// var socket = new WebSocket('wss://ws.hothothot.dog:9502');
-// socket.onopen = function (event) {
-//     console.log("Connexion établie");
-
-//     //Envoi d'un message au serveur (obligatoire)
-//     socket.send("coucou !");
-
-//     // au retour...
-//     socket.onmessage = function (event) {
-//         if (event != null) {
-//             var datas = document.getElementById("datas");
-//             datas.innerHTML = event.data;
-//         }
-//     }
-// }
-
-// fetch('https://hothothot.dog/api/capteurs?format=json')
-//     .then(response=>response.json())
-//     .then(data=>{ console.log(data["capteurs"]["0"]["Valeur"]); });
-
 
 
 

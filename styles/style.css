@@ -32,11 +32,13 @@ li {
 /* ------------------------------------ */
 /* Style du content */
 #body-content {
-    background-color: #393E46;
+    background: rgb(31,31,37);
+    background: linear-gradient(120deg, rgba(31,31,37,1) 0%, rgba(83,83,94,1) 36%, rgba(141,144,148,1) 100%);
 }
 #content {
     border-radius: 10px;
 }
+
 
 /* ------------------------------------ */
 /* Style du choix d'onglet */
