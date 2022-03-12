@@ -28,6 +28,3 @@ function graph() {
     }
   });
 }
-
-
-export { graph };

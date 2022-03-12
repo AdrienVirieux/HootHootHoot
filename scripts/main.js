@@ -1,5 +1,3 @@
-import { graph } from './graph.js'
-
 // Fonctions implémentée
 function sideMenu() {
     let sideNav = document.getElementById('side-nav');
