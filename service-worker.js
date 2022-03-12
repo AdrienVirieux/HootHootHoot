@@ -7,7 +7,8 @@ var urlCache = [
     "/scripts/graph.js",
     "/scripts/chart.js",
     "/styles/bootstrap.css",
-    "/styles/style.css"
+    "/styles/style.css",
+    "/offline.html"
 ];
 
 // Charge les ressources puis les mets dans le cache
@@ -34,7 +35,10 @@ self.addEventListener('fetch', function(event) {
                 });
                 // On retourne la réponse au navigateur
                 return response;
-            });
+            })
+        }).catch(function() {
+            // Si pas de cache et serveur offline on fallback sur la page offline
+            return caches.match('/offline.html');
         })
     );
 });
