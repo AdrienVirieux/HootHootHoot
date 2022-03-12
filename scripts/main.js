@@ -1,3 +1,5 @@
+import { graph } from './graph.js'
+
 // Fonctions implémentée
 function sideMenu() {
     let sideNav = document.getElementById('side-nav');
@@ -29,7 +31,8 @@ var the_date = weekday + ' ' + today.toLocaleDateString("fr-FR", options);
 document.getElementById('titreTemp').innerText = the_date;
 
 
-// -----------------------------------------------
+// ------------------------------------------------------------------ //
+// ------------------------------------------------------------------ //
 // LISTENERS
 
 // Ajout de Listener pour changer d'onglet
@@ -51,21 +54,17 @@ Array.from(document.querySelectorAll('#nav-onglet li, #nav-onglet span')).forEac
     );
 });
 
-// Ajout de listener poour définir la température à mettre en favori
+// Ajout de listener poour définir la température interieure ou exterieure à mettre en favori
 Array.from(document.querySelectorAll('section p img')).forEach(function (onglet) {
     onglet.addEventListener('click',
         function (event) {
-            if (event.target.getAttribute('class') == "favori") {
-                event.target.removeAttribute('class');
-                event.target.setAttribute('src', 'img/star-empty.png')
-                return;
-            }
             Array.from(document.querySelectorAll('.favori')).forEach(function (elem_active) {
                 elem_active.removeAttribute('class');
                 elem_active.setAttribute('src', 'img/star-empty.png')
             });
             event.target.setAttribute('class', 'favori');
             event.target.setAttribute('src', 'img/star.png');
+            checkMinMax();
         }
     );
 });
@@ -84,110 +83,145 @@ localStorage['myKey'] = 'somestring'; // only strings
 localStorage['myKey'] = 'konar'; // only strings
 
 // Une thes belle alerte alerte
-//window.alert("Va te faire enculé sale fils de pute");
+// window.alert("Va te faire enculé sale fils de pute");
 
 
-// -----------------------------------------------
 
-var spanMin = document.getElementById('span_min_temperature');
-var spanMax = document.getElementById('span_max_temperature');
-function checkMinMax() {
-    if (document.getElementsByClassName('favori')[0] == null) return;
-    else if (document.getElementsByClassName('favori')[0].parentNode.id == 'p_in_temperature') {
-        var temperature = document.getElementById('span_in_temperature').textContent;
-    }
-    else {
-        var temperature = document.getElementById('span_out_temperature').textContent;
-    }
+// ------------------------------------------------------------------ //
+// ------------------------------------------------------------------ //
 
-    console.log(temperature);
-    if (spanMin.textContent == "" && spanMax.textContent == "") {
-        spanMin.innerText = temperature;
-        spanMax.innerText = temperature;
-    }
-    else {
-        if (spanMin > temperature) {
-            spanMin.innerText = temperature;
-        }
-        if (spanMax < temperature) {
-            spanMax.innerHTML = temperature;
-        }
-    }
-}
 
-// -----------------------------------------------
-
+// WEBSOCKET
 function connectToCapteurs() {
-    // Websocket
+    // Initialisation de la Websocket
     const socket = new WebSocket('wss://ws.hothothot.dog:9502');
 
-    // Listen for possible errors
-    // If exist, use 'fetch'
+    // Ajout d'un listener pour les possibles erreurs de la Websocket
     socket.addEventListener('error', function (event) {
+        // Afiichage de l'erreur
+        console.log("Problème rencontré avec Websocket");
+
+        // On utilise alors la méthode Fetch
         fetch("https://hothothot.dog/api/capteurs?format=json", { method: "POST" })
-            .then(response => response.json())
+            .then(console.log("Connexion Fetch établie"))
+            .then(response => response.json())  // Convertion du message recu en JSON
             .then(function (data) {
                 console.log(data);
                 getTemperature(data);
             })
+            .catch(err => {
+                console.log("Erreur rencontré lors du fetch : " + err)
+            })
     });
 
-    // Try to connect with Websocket
+    // Connection au server avec Websocket
     socket.onopen = function (event) {
-        console.log("Connexion établie");
-        //Envoi d'un message au serveur (obligatoire)
-        socket.send("coucou !");
-        // au retour...
+        console.log("Connexion Websocket établie");
+
+        // Envoi d'un message au serveur (obligatoire)
+        socket.send("couscous");
         socket.onmessage = function (msg) {
+            // Convertion du message recu en JSON
             var resultJson = JSON.parse(msg.data);
+
             console.log(resultJson);
             getTemperature(resultJson);
         }
     }
 }
 
+
+// -----------------------------------------------
 // Initialisation du localStorage
-let temp = [];
-localStorage.setItem('IN_TEMP', JSON.stringify(temp));
-localStorage.setItem('OUT_TEMP', JSON.stringify(temp));
+// TODO a revoir car perte de données
+let structJSON = {
+    'IN_TEMP': {
+        'MIN': null,
+        'MAX': null,
+        'TEMP': [],
+        'TIME': []
+    },
+    'OUT_TEMP': {
+        'MIN': null,
+        'MAX': null,
+        'TEMP': [],
+        'TIME': []
+    }
+};
+localStorage.setItem('TEMPERATURE', JSON.stringify(structJSON));
+
 // Ajoute les valeurs du serveur recu dans le localStorage
 function localCacheTemp(temperatureIn, temperatureOut) {
-    let arrayInJSON = JSON.parse(localStorage['IN_TEMP']);
-    let arrayOutJSON = JSON.parse(localStorage['OUT_TEMP']);
-    let tempIn = [];
-    let tempOut = [];
+    let arraysJSON = JSON.parse(localStorage.getItem('TEMPERATURE'));
 
-    // Convertion d'un obj JSON -> array
-    for (i in arrayInJSON) {
-        tempIn.push(arrayInJSON[i]);
-        tempOut.push(arrayOutJSON[i]);
-    }
-    tempIn.push(temperatureIn);
-    tempOut.push(temperatureOut);
+    // Ajout de la nouvelle température dans l'array respectif
+    arraysJSON['IN_TEMP']['TEMP'].push(temperatureIn);
+    arraysJSON['OUT_TEMP']['TEMP'].push(temperatureOut);
 
-    if (tempIn.length > 1000) {
-        tempIn.pop(0);
-        tempOut.pop(0);
-    }
+    // Ajout de la date	
+    var today = new Date();
+    var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+    var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+    var dateTime = date+' '+time;
 
-    localStorage.setItem('IN_TEMP', JSON.stringify(tempIn));
-    localStorage.setItem('OUT_TEMP', JSON.stringify(tempOut));
+    arraysJSON['IN_TEMP']['TIME'].push(dateTime);
+    arraysJSON['OUT_TEMP']['TIME'].push(dateTime);
 
-    console.log(tempIn);
-    console.log(tempOut);
+    // Modification de la valeur minimum et maximum
+    if (arraysJSON['IN_TEMP']['MIN'] == null || arraysJSON['IN_TEMP']['MIN'] > temperatureIn) arraysJSON['IN_TEMP']['MIN'] = temperatureIn;
+    if (arraysJSON['IN_TEMP']['MAX'] < temperatureIn) arraysJSON['IN_TEMP']['MAX'] = temperatureIn;
+
+    if (arraysJSON['OUT_TEMP']['MIN'] == null || arraysJSON['OUT_TEMP']['MIN'] > temperatureOut) arraysJSON['OUT_TEMP']['MIN'] = temperatureOut;
+    if (arraysJSON['OUT_TEMP']['MAX'] < temperatureOut) arraysJSON['OUT_TEMP']['MAX'] = temperatureOut;
+
+
+    // TODO le faire en fonction du temps
+    // if (arraysJSON['IN_TEMP'].length > 1000) {
+    //     arraysJSON['IN_TEMP'].pop(0);
+    //     arraysJSON['OUT_TEMP'].pop(0);
+    // }
+
+    console.log(arraysJSON);
+
+    // Ajout valeurs dans le localStorage
+    localStorage.setItem('TEMPERATURE', JSON.stringify(arraysJSON));
 }
 
+
+// -----------------------------------------------
+//
+var spanMin = document.getElementById('span_min_temperature');
+var spanMax = document.getElementById('span_max_temperature');
+
+//
+function checkMinMax() {
+    if (document.getElementsByClassName('favori')[0].parentNode.id == 'p_in_temperature') {
+        var temperature = JSON.parse(localStorage.getItem('TEMPERATURE'));
+        temperature = temperature['IN_TEMP'];
+    }
+    else {
+        var temperature = JSON.parse(localStorage.getItem('TEMPERATURE'));
+        temperature = temperature['OUT_TEMP'];
+    }
+
+    spanMin.innerText = temperature['MIN'];
+    spanMax.innerText = temperature['MAX'];
+}
+
+
+// -----------------------------------------------
+// 
 var span_in_temperature = document.getElementById('span_in_temperature');
 var span_out_temperature = document.getElementById('span_out_temperature');
+
+//
 function getTemperature(dataJSON) {
     let temperatureIn = dataJSON["capteurs"]["0"]["Valeur"];
     let temperatureOut = dataJSON["capteurs"]["1"]["Valeur"];
 
-
-    console.log(temperatureIn, temperatureOut);
     localCacheTemp(temperatureIn, temperatureOut);
 
-    // Température extérieure
+    // Couleur suivant la température extérieure
     let color = 'white';
     if (temperatureOut < 0)
         color = 'blue';
@@ -196,7 +230,7 @@ function getTemperature(dataJSON) {
     span_out_temperature.setAttribute("class", color);
     span_out_temperature.innerText = temperatureOut;
 
-    // Température intérieure
+    // Couleur suivant la température intérieure
     color = 'white'
     if (temperatureIn < 0)
         color = 'blue';
@@ -211,7 +245,10 @@ function getTemperature(dataJSON) {
     span_in_temperature.setAttribute("class", color);
     span_in_temperature.innerText = temperatureIn;
 
+
     checkMinMax();
+
+    
 
     // // Affichage des problèmes
     // let titre_message_in = document.getElementById('alerte-span-out');
@@ -232,12 +269,17 @@ function getTemperature(dataJSON) {
 }
 
 
+// -----------------------------------------------
+
 connectToCapteurs();
 var interval = setInterval(function () {
     connectToCapteurs();
-}, 120000);
+}, 180000);
 
-// -----------------------------------------------
+
+
+// ------------------------------------------------------------------ //
+// ------------------------------------------------------------------ //
 
 
 
@@ -247,6 +289,3 @@ if ('serviceWorker' in navigator) {
         .register('../service-worker.js') // à adapter à l'URL du projet
         .then(() => { console.log('Service Worker Registered'); });
 }
-
-// -----------------------------------------------
-// Affichage des ancinnes température dans un tableau
