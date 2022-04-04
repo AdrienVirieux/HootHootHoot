@@ -4,13 +4,14 @@ var urlCache = [
     "/img/menu-bar.png",
     "/img/star-empty.png",
     "/img/star.png",
-    "/img/logoTrash.png",
+    "/img/logo.png",
     "/scripts/main.js",
     "/scripts/graph.js",
     "/scripts/chartDateAdaptater.js",
     "/styles/bootstrap.css",
     "/styles/style.css",
-    "/index.html"
+    "/index.html",
+    "/doc.html"
 ];
 
 // Charge les ressources puis les mets dans le cache

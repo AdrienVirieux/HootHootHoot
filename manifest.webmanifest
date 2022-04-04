@@ -4,13 +4,13 @@
     "description": "_HotHotHot_ est une application dont le rôle est d’être une interface d’information et de gestion d’un système domotique. Cette application reçoit des données en provenance de différents capteurs (ex, température, humidité, état d’un périphérique etc.) Elle affiche ces données, leur historique et propose des suggestions, émet des alertes à l’attention des utilisateurs.",
     "start_url": "/?source=pwa",
     "scope": "/",
-    "display": "standalone",
+    "display": "fullscreen",
     "icons": [{
-            "src": "img/logoTrash.png",
-            "sizes": "512x512",
+            "src": "img/logo.png",
+            "sizes": "211x211",
             "type": "image/png"
         }
     ],
     "background_color": "grey",
-    "orientation": "landscape"
+    "orientation": "portrait"
 }
