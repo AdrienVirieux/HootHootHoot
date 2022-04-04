@@ -6,49 +6,69 @@
 
     <title>Documentation</title>
 
+    <link rel="manifest" href="manifest.webmanifest">
     <link rel="stylesheet" href="styles/style.css">
-    <link rel="stylesheet" type=”text/css” href="styles/bootstrap.min.css">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="styles/bootstrap.css">
 </head>
-<body>
-    <script defer src="scripts/main.js"></script>
 
+<body>
     <!-- Navigation -->
     <nav>
         <!-- Navigation : Header-bar -->
-        <ul>
-            <li><img src="img/menu-bar.png" id="menu-icon" onclick="sideMenu()" width="20px" height="20px"></li>
-            <li><a>Install</a></li>
-            <li>logo</li>
+        <ul id="nav-bar" class="position-fixed w-100 d-flex">
+            <li class="flex-sm-fill text-sm-center nav-item">
+                <img src="img/menu-bar.png" id="menu-icon" onclick="sideMenu()" width="20px" height="20px">
+            </li>
+            <li class="flex-sm-fill text-sm-center nav-item">
+                <button id="add-button">Installer le site</button>
+            </li>
+            <li class="flex-sm-fill text-sm-center nav-item">
+                <button id="notifications">notification</button>
+            </li>
+            <li class="flex-sm-fill text-sm-center nav-item">
+                logo
+            </li>
         </ul>
 
         <!-- Navigation : Side-bar -->
-        <ul id="side-nav">
-            <li><a href="index.html">Accueil</a></li>
-            <li><a href="#">Documentation</a></li>
-            <li>Online</li>
+        <ul id="side-nav" class="nav nav-tabs">
+            <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="/index.html">Accueil</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">Documentation</a>
+            </li>
         </ul>
     </nav>
+    <!-- Fin de navigation -->
 
-    <div class="container-fluid">
-        <div class="row-xs-6 row-sm-3">
-            <h3>Présentation de l’équipe et du rôle de chacun</h3>
-            <p></p>
-        </div>
+    <div id="body-content" class="d-flex flex-column align-items-center justify-content-center h-100">
+        <div class="container-fluid">
+            <div class="row-xs-6 row-sm-3">
+                <h3>Présentation de l’équipe et du rôle de chacun</h3>
+                <p></p>
+            </div>
 
-        <div class="col-xs-6 col-sm-3">
-            <h3>Outils utilisés et organisation</h3>
-            <p></p>
-        </div>
+            <div class="col-xs-6 col-sm-3">
+                <h3>Outils utilisés et organisation</h3>
+                <p></p>
+            </div>
 
-        <div class="col-xs-6 col-sm-3">
-            <h3>2 principales difficultés rencontrées et solution apportée</h3>
-            <p></p>
-        </div>
+            <div class="col-xs-6 col-sm-3">
+                <h3>2 principales difficultés rencontrées et solution apportée</h3>
+                <p></p>
+            </div>
 
-        <div class="col-xs-6 col-sm-3">
-            <h3>Recommencer ce projet</h3>
-            <p></p>
+            <div class="col-xs-6 col-sm-3">
+                <h3>Recommencer ce projet</h3>
+                <p></p>
+            </div>
         </div>
     </div>
+
+    <!-- Scripts -->
+    <script type="text/javascript" src="./service-worker.js"></script>
+    <script type="text/javascript" src="./scripts/main.js"></script>
 </body>
 </html>

@@ -7,7 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <link rel="webmanifest" href="manifest.webmanifest">
+    <link rel="manifest" href="manifest.webmanifest">
     <link rel="stylesheet" href="styles/style.css">
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="styles/bootstrap.css">
@@ -16,26 +16,36 @@
 
     <!--Chart.js JS CDN-->
     <script src="scripts/chart.js"></script>
+    <script src="scripts/chartDateAdaptater.js"></script>
 </head>
 
 <body>
-    <!-- Other Scripts -->
-    <script defer type="text/javascript" src="scripts/main.js"></script>
-    <script defer src="scripts/graph.js"></script>
-    <script defer type="text/javascript" src="service-worker.js"></script>
+    <div id="login-background" class="w-100">
+        <div id="login-page" class="w-100 h-100">
+            <h3>Connection</h3>
+            <form>
+                <section>
+                    <span>Nom utilisateur</span>
+                    <input required>
+                    <span>Mot de passe</span>
+                    <input type="password" required>
+                </section>
+                <button id="tryLogin">login</button>
+            </form>
 
-    
+        </div>
+    </div>
 
 
     <!-- Navigation -->
     <nav>
         <!-- Navigation : Header-bar -->
-        <ul class="position-fixed w-100 d-flex">
+        <ul id="nav-bar" class="position-fixed w-100 d-flex">
             <li class="flex-sm-fill text-sm-center nav-item">
                 <img src="img/menu-bar.png" id="menu-icon" onclick="sideMenu()" width="20px" height="20px">
             </li>
             <li class="flex-sm-fill text-sm-center nav-item">
-                <button class="add-button">Install direct sinon consequence</button>
+                <button id="add-button">Installer le site</button>
             </li>
             <li class="flex-sm-fill text-sm-center nav-item">
                 <button id="notifications">notification</button>
@@ -53,30 +63,25 @@
             <li class="nav-item">
                 <a class="nav-link" href="doc.html">Documentation</a>
             </li>
-            <li class="nav-item">
-                Online
-            </li>
         </ul>
     </nav>
     <!-- Fin de navigation -->
 
 
-
     <div id="body-content" class="d-flex flex-column align-items-center justify-content-center h-100">
-        <div id="content" class="w-75 h-75">
-            <!-- Choix de l'onglet à afficher -->
-            <div id="nav-onglet" class="nav">
-                <ul role="tablist" class="d-flex w-100 m-0 p-0">
-                    <li role="tab" id="onglet-ReelT" class="onglet" value="reelTime">
-                        <span> EN TEMPS REEL </span>
-                    </li>
-                    <li role="tab" id="onglet-Hist" class="onglet" value="historique">
-                        <span> HISTORIQUE </span>
-                    </li>
-                </ul>
-            </div>
+        <!-- Choix de l'onglet à afficher -->
+        <div id="nav-onglet" class="nav w-75">
+            <ul role="tablist" class="d-flex w-100 m-0 p-0">
+                <li role="tab" id="onglet-ReelT" class="onglet-actif" value="reelTime">
+                    <span> EN TEMPS REEL </span>
+                </li>
+                <li role="tab" id="onglet-Hist" value="historique">
+                    <span> HISTORIQUE </span>
+                </li>
+            </ul>
+        </div>
 
-
+        <div id="content" class="w-75">
             <!-- Affichage de la température en temps réel -->
             <section role="tabpanel" id="reelTime" class="active">
                 <h3 id="titreTemp" class="text-center">Température en temps réel</h3>
@@ -95,30 +100,40 @@
                     </section>
                 </div>
 
+                <div id="contentAlert" class="d-flex flex-column">
+                    <template id="templateTest">
+                        <section class="text-center">
+                            <h4>/!\ Alerte !!</h4>
+                            <span></span>
+                        </section>
+                    </template>
+                </div>
 
-                <div>
-                    <div>
+                <div id="contentMinMax" class="d-flex flex-row justify-content-center w-100">
+                    <section class="d-flex flex-column align-items-center w-50">
                         <h5>Min</h5>
                         <span id="span_min_temperature"></span>
-                    </div>
-                    <div>
+                    </section>
+                    <section class="d-flex flex-column align-items-center w-50">
                         <h5>Max</h5>
                         <span id="span_max_temperature"></span>
-                    </div>
+                    </section>
                 </div>
             </section>
 
             <!-- Affichage des température sous forme de graphe -->
             <section role="tabpanel" id="historique">
                 <h4 class="text-center">Tableau des anciennes température</h4>
-                <div id="graph">
-                    <canvas id="myChart"></canvas>
+                <div id="chartAreaWrapper" class="d-flex justify-content-center align-items-center h-75">
+                    <canvas id="myChart" width="800"></canvas>
                 </div>
             </section>
         </div>
     </div>
 
-
+    <!-- Scripts -->
+    <script type="text/javascript" src="./service-worker.js"></script>
+    <script type="text/javascript" src="./scripts/main.js"></script>
 </body>
 
 </html>
