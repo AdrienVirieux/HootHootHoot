@@ -207,3 +207,11 @@ section[role=tabpanel].active {
     flex-direction: column;
     background-color: white;
 }
+
+
+
+
+#doc-content {
+    background-color: #f0f0f0;
+    margin-top: 30px;
+}

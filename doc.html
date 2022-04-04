@@ -27,9 +27,6 @@
             <li class="flex-sm-fill text-sm-center nav-item">
                 <button id="notifications">notification</button>
             </li>
-            <li class="flex-sm-fill text-sm-center nav-item">
-                logo
-            </li>
         </ul>
 
         <!-- Navigation : Side-bar -->
@@ -45,25 +42,70 @@
     <!-- Fin de navigation -->
 
     <div id="body-content" class="d-flex flex-column align-items-center justify-content-center h-100">
-        <div class="container-fluid">
-            <div class="row-xs-6 row-sm-3">
+        <div class="container-fluid w-100" id="doc-content">
+            <div class="row-xs-6 row-sm-3 w-75">
                 <h3>Présentation de l’équipe et du rôle de chacun</h3>
-                <p></p>
+                <p>
+                     Pour le projet, nous nous sommes réppartie de la manière suivante : <br>
+                     <nav>
+                        - Adrien VIRIEUX (chef de projet)
+                         <ul>
+                             <li>affichage l'historique des température (graphe)</li>
+                             <li>webmanifest</li>
+                             <li>bouton d'installation</li>
+                         </ul>
+                         <br>
+                         - Théo FACCIOTTI
+                         <ul>
+                             <li>service worker</li>
+                             <li>affichage des température min et max</li>
+                             <li>choix de la température min et max, entre extérieure et intérieure</li>
+                         </ul>
+                         <br>
+                         - Pascal FLORES
+                         <ul>
+                             <li>affichage l'historique des température (graphe)</li>
+                             <li>connexion à un compte (début d'implémentation)</li>
+                         </ul>
+                         <br>
+                         - Quentin MEYER
+                         <ul>
+                             <li>stockage des température dans le LocalStorage</li>
+                             <li>affichage de le température actuelle</li>
+                             <li>notification suivant la température actuelle</li>
+                         </ul>
+                     </nav>
+                </p>
             </div>
 
-            <div class="col-xs-6 col-sm-3">
+            <div class="col-xs-6 col-sm-3 w-75">
                 <h3>Outils utilisés et organisation</h3>
-                <p></p>
+                <p>
+                    Les outils que l'on a utilisé lors du projet sont :<br>
+                     - GitHub - lien vers notre <a href="https://github.com/AdrienVirieux/HootHootHoot">projet</a> <br>
+                     - Netlify - lien vers notre <a  href="https://amazing-knuth-509f12.netlify.app/">site</a>
+                </p>
             </div>
 
-            <div class="col-xs-6 col-sm-3">
-                <h3>2 principales difficultés rencontrées et solution apportée</h3>
-                <p></p>
+            <div class="col-xs-6 col-sm-3 w-75">
+                <h3>2 principales difficultés rencontrées</h3>
+                <p>
+                    1ère difficulté :<br>
+                    L'utilisation de la librairie Chart.js que l'on a utilisé pour afficher l'historique des température sous forme de graphe.<br>
+                    Le problème est que cette dernière est compliqué à prendre en main, mais très complète. Donc il nous a fallu un bon moment pour pouvoir faire un graphe qui nous convient.<br>
+                    <br>
+                    2ème difficulté :<br>
+                    Pour que le PWA fonctionne, il a fallu que notre manifest n'ai aucune erreurs. Et il a été difficile de comprendre qu'est ce qui n'allait pas dans notre manifest.<br>
+                    On a donc fait pas mal de recherche et de test pour comprendre comment fonctionne un manifest web.<br>
+                </p>
             </div>
 
-            <div class="col-xs-6 col-sm-3">
+            <div class="col-xs-6 col-sm-3 w-75">
                 <h3>Recommencer ce projet</h3>
-                <p></p>
+                <p>
+                    Si on devait recommencer le projet, on pense qu'on devrait avoir une meilleure organisation de départ et de bien définir les tâches à faire ainsi qu'une idée du style du site.<br>
+                    Ce qui nous aurait permis d'éviter de faire des modifications qui nous plaisez pas, et ainsi éviter de perdre du temps.<br>
+                </p>
             </div>
         </div>
     </div>
