@@ -1,17 +1,17 @@
 var CACHE_NAME = '_HotHotHot_offline';
 var urlCache = [
-    "/",
-    "/img/menu-bar.png",
-    "/img/star-empty.png",
-    "/img/star.png",
-    "/img/logo.png",
-    "/scripts/main.js",
-    "/scripts/graph.js",
-    "/scripts/chartDateAdaptater.js",
-    "/styles/bootstrap.css",
-    "/styles/style.css",
-    "/index.html",
-    "/doc.html"
+  "/",
+  "/img/menu-bar.png",
+  "/img/star-empty.png",
+  "/img/star.png",
+  "/img/logo.png",
+  "/scripts/main.js",
+  "/scripts/chartDateAdaptater.js",
+  "/scripts/chart.js",
+  "/styles/bootstrap.css",
+  "/styles/style.css",
+  "/doc.html",
+  "/index.html"
 ];
 
 // Charge les ressources puis les mets dans le cache
